@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SOIL CRC BCA Tool Guide</title><link rel="stylesheet" href="styles.css"></head>
+<body>
+<div class="container" style="padding:32px 20px 48px;max-width:1100px;">
+  <header class="card prose" style="margin-bottom:20px;">
+    <div class="eyebrow">SOIL CRC</div>
+    <h1 style="margin-top:6px;">User guide</h1>
+    <p>This guide explains what each tab does, how the calculations work, how the uploaded workbook is interpreted, and how to read the outputs. It is written so that a farmer, adviser, project officer, or researcher can use the tool without needing a separate briefing.</p>
+  </header>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>1. What the tool does</h2>
+    <p>The tool compares treatments from an agricultural trial workbook. Each replicate row supplies one treatment observation. The tool reads crop yield and the individual direct cost components, calculates a direct cost total for each replicate, averages the replicate rows within each treatment, and then applies the user’s grain price and discounting settings to produce present value measures.</p>
+    <p>The current version is intentionally focused on direct market effects only. Benefits are valued from crop yield. Costs are valued from the cost component fields in the workbook. Indirect or environmental co-benefits are not included in this version.</p>
+  </section>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>2. How each tab works</h2>
+    <p><strong>Introduction</strong> gives the background, scope, acknowledgements, and main workflow.</p>
+    <p><strong>Data</strong> is where the workbook is uploaded, checked, summarised, and previewed. This tab shows whether the workbook was read correctly and whether a control treatment was found.</p>
+    <p><strong>Settings</strong> is where the grain price, analysis period, and discount schedule are set. These choices affect all present value results.</p>
+    <p><strong>Results</strong> is where the analysis is run. It shows headline metrics, a comparison table, and the full treatment ranking table. It also provides prepared prompts for ChatGPT and Copilot.</p>
+    <p><strong>Sensitivity</strong> allows direct numeric testing of alternative discount rates, grain prices, benefits, and costs.</p>
+    <p><strong>Help</strong> provides quick answers and opens this guide in a separate window.</p>
+  </section>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>3. How the workbook is read</h2>
+    <p>The workbook should use the official template and contain a sheet named <strong>Trial_Data</strong>. Each row below the header should represent one replicate. The tool uses the following fields directly: Treatment ID, Replicate ID, Amendment Name, Practice Change Label, Crop_yield_t_ha, and all cost component fields.</p>
+    <p>The control is identified from the control row in the workbook. In the supplied trial data, the control is the row where the amendment name is Control and the practice label is No change.</p>
+  </section>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>4. Formulas used in the tool</h2>
+    <p><strong>Calculated direct cost per replicate</strong> is the sum of the main direct cost components in that row.</p>
+    <p><code>Calculated direct cost = Seed cost + Total labour + Total machinery + Fertiliser + Pesticides + Fuel + Marketing + Repairs and maintenance + Support services + Electricity + Water + Insurance services + Overheads + Interest paid on loans + Structure maintenance + Other costs</code></p>
+    <p><strong>Average yield for a treatment</strong> is the arithmetic mean of the replicate crop yield values for that treatment.</p> is the arithmetic mean of the replicate crop yield values for that treatment.</p>
+    <p><strong>Average direct cost for a treatment</strong> is the arithmetic mean of the calculated direct cost totals across that treatment’s replicate rows.</p>
+    <p><strong>Annual benefit per hectare</strong> is average yield multiplied by grain price.</p>
+    <p><code>Annual benefit = Average yield × Grain price</code></p>
+    <p><strong>Present value factor</strong> is the sum of discount factors across the selected analysis years.</p>
+    <p><code>PV factor = Σ 1 / Π(1 + r_t)</code></p>
+    <p><strong>Present value of benefits</strong> is annual benefit multiplied by the present value factor.</p>
+    <p><strong>Present value of costs</strong> is average direct cost multiplied by the present value factor.</p>
+    <p><strong>Net present value</strong> equals present value of benefits minus present value of costs.</p>
+    <p><strong>Benefit-cost ratio</strong> equals present value of benefits divided by present value of costs.</p>
+    <p><strong>Gross profit margin</strong> is calculated as <code>((PV benefits − PV costs) / PV benefits) × 100</code>.</p>
+    <p><strong>Difference versus control</strong> is the treatment net present value minus the control net present value.</p>
+  </section>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>5. Detailed numerical example from the included dataset</h2>
+    <p>This worked example uses the included uploaded trial data, a grain price of $500 per tonne, an analysis period of 10 years, and a constant annual discount rate of 5.0%.</p>
+    <p>The present value factor for 10 years at 5.0% is approximately <strong>7.7217</strong>. This is obtained from adding the yearly discount factors from year 1 to year 10.</p>
+    <p>For the <strong>Gypsum</strong> treatment, the average crop yield across the replicate rows is <strong>3.3325 t/ha</strong>. The annual benefit is therefore <strong>3.3325 × $500 = $1666.25 per hectare</strong>.</p>
+    <p>The calculated direct cost for each replicate is obtained by summing the main direct cost components in that row. For Gypsum, this means seed cost, total labour, total machinery, fertiliser, pesticides, fuel, marketing, repairs and maintenance, support services, electricity, water, insurance services, overheads, interest paid on loans, structure maintenance, and other costs. The average calculated direct cost across the Gypsum replicate rows is <strong>$812.08 per hectare</strong>.</p>
+    <p>The present value of benefits for Gypsum is therefore <strong>$1666.25 × 7.7217 = $12866.34 per hectare</strong>.</p>
+    <p>The present value of costs for Gypsum is therefore <strong>$812.08 × 7.7217 = $6270.65 per hectare</strong>.</p>
+    <p>The net present value for Gypsum is <strong>$12866.34 − $6270.65 = $6595.69 per hectare</strong>.</p>
+    <p>The benefit-cost ratio for Gypsum is <strong>$12866.34 / $6270.65 = 2.05</strong>.</p>
+    <p>The gross profit margin for Gypsum is <strong>(($12866.34 − $6270.65) / $12866.34) × 100 = 51.3%</strong>.</p>
+    <p>For the <strong>Control</strong> treatment, the average crop yield is <strong>2.7525 t/ha</strong> and the average calculated direct cost is <strong>$846.00 per hectare</strong>. The control net present value under the same settings is <strong>$4094.41 per hectare</strong>.</p>
+    <p>The difference versus control for Gypsum is therefore <strong>$6595.69 − $4094.41 = $2501.28 per hectare</strong>.</p>
+    <p>This means that, under these particular assumptions, Gypsum generates a higher discounted return per hectare than the control.</p>
+  </section>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>6. How to interpret the outputs</h2>
+    <p>A positive net present value means discounted benefits exceed discounted costs. A higher net present value indicates a stronger return under the chosen settings.</p>
+    <p>A benefit-cost ratio above 1.00 means benefits exceed costs. Ratios further above 1.00 indicate a larger benefit return for each discounted dollar of cost.</p>
+    <p>A higher gross profit margin means a larger share of discounted benefits remains after discounted costs are deducted.</p>
+    <p>The difference versus control helps answer the practical question of whether a treatment performs better or worse than the reference practice.</p>
+  </section>
+
+  <section class="card prose" style="margin-bottom:18px;">
+    <h2>7. Common issues and what they mean</h2>
+    <p>If the workbook cannot be read, save the Excel file and upload it again using the official template.</p>
+    <p>If no results appear, check that the workbook contains data rows, that yield values are present, and that the control treatment can be identified.</p>
+    <p>If the validation note says the reported total farm cost differs from the summed cost components, the analysis will still run. The tool uses the summed cost components because that is the method adopted for this version.</p>
+  </section>
+</div></body></html>
